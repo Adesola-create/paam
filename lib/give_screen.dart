@@ -13,9 +13,7 @@ class _GiveScreenState extends State<GiveScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Give'),
-      ),
+      appBar: AppBar(title: Text('Give')),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -24,13 +22,18 @@ class _GiveScreenState extends State<GiveScreen> {
             Text('Give once', style: TextStyle(fontSize: 18)),
             TextField(
               controller: amountController,
-              decoration: InputDecoration(labelText: '\$0', border: OutlineInputBorder()),
+              decoration: InputDecoration(
+                labelText: '\$0',
+                border: OutlineInputBorder(),
+              ),
             ),
             SizedBox(height: 20),
             Text('Give regularly', style: TextStyle(fontSize: 18)),
             DropdownButton<String>(
               value: frequency == 'Select frequency' ? null : frequency,
-              items: <String>['Weekly', 'Bi-weekly', 'Monthly'].map((String value) {
+              items: <String>['Weekly', 'Bi-weekly', 'Monthly'].map((
+                String value,
+              ) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(value),
@@ -46,10 +49,18 @@ class _GiveScreenState extends State<GiveScreen> {
             SizedBox(height: 20),
             Text('Give to a campaign', style: TextStyle(fontSize: 18)),
             ListTile(
-              title: Text('Water for All'),
-              subtitle: Text('Support our mission to provide clean water'),
-              leading: Image.network('https://via.placeholder.com/100'), // Placeholder image
+              title: const Text('Water for All'),
+              subtitle: const Text(
+                'Support our mission to provide clean water',
+              ),
+              leading: Image.asset(
+                'assets/slide2.png',
+                width: 50,
+                height: 50,
+                fit: BoxFit.cover,
+              ),
             ),
+
             ElevatedButton(
               onPressed: () {
                 // Add functionality for giving

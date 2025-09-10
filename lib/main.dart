@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'slide_screen.dart';
 import 'login.dart';
 import 'sign_up.dart';
-import 'home.dart';
+import 'dashboard.dart';
 import 'splash_screen.dart';
 
 void main() {
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         '/slides': (context) => SlideScreen(),
         '/login': (context) => LoginScreen(),
         '/signup': (context) => SignUpScreen(),
-        '/home': (context) => HomeScreen(),
+        '/home': (context) => DashboardScreen(),
       },
     );
   }

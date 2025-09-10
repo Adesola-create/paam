@@ -1,6 +1,9 @@
+//import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'home.dart';
+//import 'package:shared_preferences/shared_preferences.dart';
 import 'package:paam/constants.dart';
+import 'services/api_service.dart';
+import 'dashboard.dart';
 
 class LoginScreen extends StatefulWidget {
   @override
@@ -11,22 +14,60 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
+  bool _isLoading = false;
+
+  Future<void> _loginUser() async {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    if (email.isEmpty || password.isEmpty) {
+      _showMessage("Please fill all fields");
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      final response = await ApiService.loginUser(
+        email: email,
+        password: password,
+      );
+
+      if (response["token"] != null) {
+        _showMessage("Login successful ✅");
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => DashboardScreen()),
+        );
+      } else {
+        _showMessage(response["message"] ?? "Invalid credentials");
+      }
+    } catch (e) {
+      _showMessage("Something went wrong. Please try again.");
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  void _showMessage(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message)),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // White background
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0), // Horizontal padding
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start, // Align content to left
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 80), // Top spacing
-
-                // Bold Heading
+                const SizedBox(height: 80),
                 const Text(
                   'Login',
                   style: TextStyle(
@@ -35,20 +76,13 @@ class _LoginScreenState extends State<LoginScreen> {
                     color: Colors.black,
                   ),
                 ),
-
                 const SizedBox(height: 10),
-
                 const Text(
                   'Welcome back! Please log in to continue.',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.grey,
-                  ),
+                  style: TextStyle(fontSize: 18, color: Colors.grey),
                 ),
-
                 const SizedBox(height: 80),
 
-                // Email Field
                 _buildTextField(
                   controller: _emailController,
                   label: 'Email',
@@ -56,7 +90,6 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 12),
 
-                // Password Field
                 _buildTextField(
                   controller: _passwordController,
                   label: 'Password',
@@ -76,43 +109,34 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 const SizedBox(height: 25),
 
-                // Login Button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      // Handle login action
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()),
-                      );
-                    },
+                    onPressed: _isLoading ? null : _loginUser,
                     style: primaryButtonStyle.copyWith(
                       minimumSize: const WidgetStatePropertyAll(Size(double.infinity, 55)),
                     ),
-                    child: const Text(
-                      'Login',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
+                    child: _isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                            'Login',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
                   ),
                 ),
 
                 const SizedBox(height: 20),
 
-                // Don't have an account? Sign Up
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
                       "Don't have an account?",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.grey,
-                      ),
+                      style: TextStyle(fontSize: 16, color: Colors.grey),
                     ),
                     TextButton(
                       onPressed: () {
@@ -138,7 +162,6 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  // Helper method to build styled text fields
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,

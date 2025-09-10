@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'home.dart';
-import 'login.dart'; // <-- Import the Login Screen
+import 'otp_verification.dart';
+import 'login.dart';
 import 'package:paam/constants.dart';
+import 'services/api_service.dart';
 
 class SignUpScreen extends StatefulWidget {
   @override
@@ -14,23 +15,90 @@ class _SignInScreenState extends State<SignUpScreen> {
   final TextEditingController _phoneNumberController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+
+  bool _isLoading = false;
+
+  // Function to handle sign up
+  Future<void> _handleSignUp() async {
+    final firstName = _firstNameController.text.trim();
+    final lastName = _lastNameController.text.trim();
+    final phone = _phoneNumberController.text.trim();
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+    final confirmPassword = _confirmPasswordController.text.trim();
+
+    if (firstName.isEmpty ||
+        lastName.isEmpty ||
+        phone.isEmpty ||
+        email.isEmpty ||
+        password.isEmpty ||
+        confirmPassword.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('All fields are required')));
+      return;
+    }
+
+    if (password != confirmPassword) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Passwords do not match')));
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      final response = await ApiService.registerUser(
+        firstName: firstName,
+        lastName: lastName,
+        phone: phone,
+        email: email,
+        password: password,
+      );
+
+      if (response['success'] == true) {
+        // Token is already saved inside ApiService.registerUser
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => OtpVerificationScreen(email: email),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(response['message'] ?? 'Registration failed')),
+        );
+      }
+    } catch (error) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(error.toString())));
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white, // White background
+      backgroundColor: Colors.white,
       body: SingleChildScrollView(
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0), // Horizontal padding
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start, // Align content to left
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const SizedBox(height: 80), // Top spacing
+                const SizedBox(height: 80),
 
-                // Bold Heading
                 const Text(
                   'Sign Up',
                   style: TextStyle(
@@ -41,18 +109,13 @@ class _SignInScreenState extends State<SignUpScreen> {
                 ),
 
                 const SizedBox(height: 10),
-                // Subtitle
                 const Text(
                   'Get started with PAAM Digital Hub',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.grey,
-                  ),
+                  style: TextStyle(fontSize: 18, color: Colors.grey),
                 ),
 
                 const SizedBox(height: 80),
 
-                // First Name Field
                 _buildTextField(
                   controller: _firstNameController,
                   label: 'First Name',
@@ -60,7 +123,6 @@ class _SignInScreenState extends State<SignUpScreen> {
                 ),
                 const SizedBox(height: 12),
 
-                // Last Name Field
                 _buildTextField(
                   controller: _lastNameController,
                   label: 'Last Name',
@@ -68,7 +130,6 @@ class _SignInScreenState extends State<SignUpScreen> {
                 ),
                 const SizedBox(height: 12),
 
-                // Phone number Field
                 _buildTextField(
                   controller: _phoneNumberController,
                   label: 'Phone Number',
@@ -76,7 +137,6 @@ class _SignInScreenState extends State<SignUpScreen> {
                 ),
                 const SizedBox(height: 12),
 
-                // Email Field
                 _buildTextField(
                   controller: _emailController,
                   label: 'Email',
@@ -84,7 +144,6 @@ class _SignInScreenState extends State<SignUpScreen> {
                 ),
                 const SizedBox(height: 12),
 
-                // Password Field
                 _buildTextField(
                   controller: _passwordController,
                   label: 'Password',
@@ -93,7 +152,6 @@ class _SignInScreenState extends State<SignUpScreen> {
                 ),
                 const SizedBox(height: 12),
 
-                // Confirm Password Field
                 _buildTextField(
                   controller: _confirmPasswordController,
                   label: 'Confirm Password',
@@ -102,34 +160,30 @@ class _SignInScreenState extends State<SignUpScreen> {
                 ),
                 const SizedBox(height: 25),
 
-                // Sign Up Button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      // Handle sign-up action
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()),
-                      );
-                    },
+                    onPressed: _isLoading ? null : _handleSignUp,
                     style: primaryButtonStyle.copyWith(
-                      minimumSize: const WidgetStatePropertyAll(Size(double.infinity, 55)),
-                    ),
-                    child: const Text(
-                      'Sign Up',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
+                      minimumSize: const WidgetStatePropertyAll(
+                        Size(double.infinity, 55),
                       ),
                     ),
+                    child: _isLoading
+                        ? const CircularProgressIndicator(color: Colors.white)
+                        : const Text(
+                            'Sign Up',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
+                          ),
                   ),
                 ),
 
                 const SizedBox(height: 20),
 
-                // Already have an account? Login
                 Center(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -142,7 +196,9 @@ class _SignInScreenState extends State<SignUpScreen> {
                         onTap: () {
                           Navigator.pushReplacement(
                             context,
-                            MaterialPageRoute(builder: (context) => LoginScreen()),
+                            MaterialPageRoute(
+                              builder: (context) => LoginScreen(),
+                            ),
                           );
                         },
                         child: const Text(
@@ -158,7 +214,7 @@ class _SignInScreenState extends State<SignUpScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 40), // Bottom spacing
+                const SizedBox(height: 40),
               ],
             ),
           ),
@@ -167,7 +223,6 @@ class _SignInScreenState extends State<SignUpScreen> {
     );
   }
 
-  // Helper method to build styled text fields
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,

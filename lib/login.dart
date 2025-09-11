@@ -33,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
         password: password,
       );
 
-      if (response["token"] != null) {
+      if (response["status"] == "success" && response["statusCode"] == 200) {
         _showMessage("Login successful ✅");
         Navigator.pushReplacement(
           context,

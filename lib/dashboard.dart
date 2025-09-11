@@ -3,6 +3,10 @@ import 'Training.dart';
 import 'community.dart';
 import 'give_screen.dart';
 import 'more.dart';
+import 'constants.dart';
+import 'notifications.dart';
+import 'article_screen.dart';
+import 'ai_guidance_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -30,7 +34,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       body: _pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        selectedItemColor: Colors.deepPurple,
+        selectedItemColor: primaryColor,
         unselectedItemColor: Colors.grey,
         type: BottomNavigationBarType.fixed,
         onTap: (index) => setState(() => _currentIndex = index),
@@ -72,23 +76,28 @@ class DashboardHome extends StatelessWidget {
                         //Text("Caleb", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
                       ],
                     ),
-                    Stack(
-                      children: [
-                        const Icon(Icons.notifications_none, size: 28, color: Colors.grey),
-                        Positioned(
-                          right: 0,
-                          top: 0,
-                          child: Container(
-                            height: 10,
-                            width: 10,
-                            decoration: BoxDecoration(
-                              color: Colors.red,
-                              borderRadius: BorderRadius.circular(50),
-                              border: Border.all(color: Colors.white, width: 2),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => NotificationsScreen()));
+                      },
+                      child: Stack(
+                        children: [
+                          const Icon(Icons.notifications_none, size: 28, color: Colors.grey),
+                          Positioned(
+                            right: 0,
+                            top: 0,
+                            child: Container(
+                              height: 10,
+                              width: 10,
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(50),
+                                border: Border.all(color: Colors.white, width: 2),
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     )
                   ],
                 ),
@@ -163,7 +172,7 @@ class DashboardHome extends StatelessWidget {
             const SizedBox(height: 12),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurple,
+                backgroundColor: primaryColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30),
                 ),
@@ -172,7 +181,9 @@ class DashboardHome extends StatelessWidget {
                   vertical: 12,
                 ),
               ),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => ArticleScreen()));
+              },
               child: const Text(
                 "Read Now",
                 style: TextStyle(color: Colors.white),
@@ -191,20 +202,21 @@ class DashboardHome extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("Your Training Dashboard",
+                    const Text("Your Training Progress",
                         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 12),
-                    progressItem("Module 1: Foundations of Faith", 0.75, Colors.green, Colors.blue),
-                    const SizedBox(height: 12),
-                    progressItem("Module 2: The Old Testament", 0.4, Colors.yellow, Colors.orange),
+                    progressItem("Overall Training Progress", 0.65),
                     const SizedBox(height: 12),
                     OutlinedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => TrainingPage()));
+                      },
                       style: OutlinedButton.styleFrom(
                         padding: const EdgeInsets.all(14),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        side: BorderSide(color: primaryColor),
                       ),
-                      child: const Text("View All Modules"),
+                      child: Text("View All Modules", style: TextStyle(color: primaryColor)),
                     ),
                   ],
                 ),
@@ -217,9 +229,9 @@ class DashboardHome extends StatelessWidget {
                 physics: const NeverScrollableScrollPhysics(),
                 crossAxisCount: 3,
                 children: [
-                  quickAction(Icons.book, "Modules"),
-                  quickAction(Icons.people, "Meetings"),
-                  quickAction(Icons.volunteer_activism, "Donate"),
+                  quickAction(context, Icons.book, "Modules", () => Navigator.push(context, MaterialPageRoute(builder: (context) => TrainingPage()))),
+                  quickAction(context, Icons.people, "Meetings", () => Navigator.push(context, MaterialPageRoute(builder: (context) => CommunityScreen()))),
+                  quickAction(context, Icons.volunteer_activism, "Donate", () => Navigator.push(context, MaterialPageRoute(builder: (context) => GiveScreen()))),
                 ],
               ),
 
@@ -229,7 +241,7 @@ class DashboardHome extends StatelessWidget {
                 margin: const EdgeInsets.all(16),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  gradient: const LinearGradient(colors: [Colors.purple, Colors.indigo]),
+                  gradient: LinearGradient(colors: [primaryColor, primaryColor.withOpacity(0.7)]),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Column(
@@ -256,7 +268,7 @@ class DashboardHome extends StatelessWidget {
                 margin: const EdgeInsets.all(16),
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: Colors.deepPurple,
+                  color: primaryColor,
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: Row(
@@ -268,7 +280,9 @@ class DashboardHome extends StatelessWidget {
                       Text("Get AI-powered answers about faith.", style: TextStyle(color: Colors.white70)),
                     ]),
                     OutlinedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => AIGuidanceScreen()));
+                      },
                       style: OutlinedButton.styleFrom(
                         side: const BorderSide(color: Colors.white30),
                         backgroundColor: Colors.white.withOpacity(0.2),
@@ -285,7 +299,7 @@ class DashboardHome extends StatelessWidget {
     );
   }
 
-  Widget progressItem(String title, double progress, Color startColor, Color endColor) {
+  Widget progressItem(String title, double progress) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -297,16 +311,11 @@ class DashboardHome extends StatelessWidget {
         const SizedBox(height: 6),
         ClipRRect(
           borderRadius: BorderRadius.circular(10),
-          child: ShaderMask(
-            shaderCallback: (Rect bounds) {
-              return LinearGradient(colors: [startColor, endColor]).createShader(bounds);
-            },
-            child: LinearProgressIndicator(
-              value: progress,
-              minHeight: 8,
-              backgroundColor: Colors.grey[300],
-              color: Colors.white,
-            ),
+          child: LinearProgressIndicator(
+            value: progress,
+            minHeight: 8,
+            backgroundColor: Colors.grey[300],
+            color: primaryColor,
           ),
         ),
       ],
@@ -321,21 +330,24 @@ class DashboardHome extends StatelessWidget {
     );
   }
 
-  Widget quickAction(IconData icon, String label) {
-    return Container(
-      margin: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          CircleAvatar(backgroundColor: Colors.purple.shade100, child: Icon(icon, color: Colors.deepPurple)),
-          const SizedBox(height: 6),
-          Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
-        ],
+  Widget quickAction(BuildContext context, IconData icon, String label, VoidCallback onTap) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        margin: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)],
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircleAvatar(backgroundColor: primaryColor.withOpacity(0.1), child: Icon(icon, color: primaryColor)),
+            const SizedBox(height: 6),
+            Text(label, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+          ],
+        ),
       ),
     );
   }

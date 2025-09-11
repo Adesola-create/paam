@@ -61,7 +61,9 @@ class _SignInScreenState extends State<SignUpScreen> {
         password: password,
       );
 
-      if (response['success'] == true) {
+      print("🔹 SIGNUP RESPONSE: $response");
+
+      if (response["status"] == "success" && response["statusCode"] == 200) {
         // Token is already saved inside ApiService.registerUser
         Navigator.pushReplacement(
           context,

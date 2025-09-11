@@ -14,6 +14,8 @@ class _TrainingPageState extends State<TrainingPage> {
   final int totalModules = 5;
   int unlockedModules = 1;
 
+  String? selectedTraining; // ✅ to track which training is chosen
+
   void _showLeadershipModal() {
     showDialog(
       context: context,
@@ -104,166 +106,241 @@ class _TrainingPageState extends State<TrainingPage> {
     double progress = unlockedModules / totalModules;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "Mandate Training",
-          style: GoogleFonts.poppins(fontWeight: FontWeight.bold),
-        ),
-        centerTitle: true,
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // ====== Introductory Text ======
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Text(
-              "Welcome to the Mandate Training Program! Here you'll gain spiritual insights and practical steps "
-              "to strengthen your faith and leadership journey. Complete each module to unlock the next.",
-              style: GoogleFonts.poppins(
-                fontSize: 14,
-                color: Colors.grey[700],
-                height: 1.5,
+      appBar: AppBar(),
+      body: selectedTraining == null
+          // ✅ Step 1: Training type selection
+          ? Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Mandate\nTraining",
+                    style: GoogleFonts.poppins(
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      height: 1.2,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    "Grow in faith and leadership through our comprehensive training modules. Choose your path and begin your spiritual journey today.",
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      color: Colors.grey[600],
+                      height: 1.4,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Text(
+                    "Select the type of training to begin:",
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey[800],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Card(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    child: ListTile(
+                      leading: const Icon(Icons.school, color: Colors.pink),
+                      title: const Text("Faith Training"),
+                      subtitle: const Text("Foundational spiritual growth modules"),
+                      onTap: () {
+                        setState(() {
+                          selectedTraining = "faith";
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Card(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    child: ListTile(
+                      leading: const Icon(Icons.leaderboard, color: Colors.purple),
+                      title: const Text("Leadership Training"),
+                      subtitle: const Text("Advanced leadership and mentoring modules"),
+                      onTap: () {
+                        setState(() {
+                          selectedTraining = "leadership";
+                        });
+                      },
+                    ),
+                  ),
+                ],
               ),
-              textAlign: TextAlign.justify,
-            ),
-          ),
-
-          // ====== Training Progress Bar ======
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-            child: Column(
+            )
+          // ✅ Step 2: Show original training details after selection
+          : Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  "Training Progress",
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.grey[800],
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: LinearProgressIndicator(
-                        value: progress,
-                        minHeight: 8,
-                        backgroundColor: Colors.grey.shade300,
-                        color: Colors.pink,
+                // ====== Heading ======
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "${selectedTraining == "faith" ? "Faith" : "Leadership"}\nTraining",
+                        style: GoogleFonts.poppins(
+                          fontSize: 32,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                          height: 1.2,
+                        ),
                       ),
-                    ),
-                    Text(
-                      "${(progress * 100).toStringAsFixed(0)}%",
-                      style: GoogleFonts.poppins(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-
-          // ====== Modules Heading ======
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Text(
-              "Modules",
-              style: GoogleFonts.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.grey[800],
-              ),
-            ),
-          ),
-
-          // ====== Module List ======
-          Expanded(
-            child: ListView.builder(
-              itemCount: totalModules,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemBuilder: (context, index) {
-                final isUnlocked = index < unlockedModules;
-
-                return Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  decoration: BoxDecoration(
-                    border: Border.all(
-                      color: isUnlocked ? Colors.pink : Colors.grey,
-                      width: 1,
-                    ),
-                    borderRadius: BorderRadius.circular(12),
-                    color: Colors.white,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 3,
-                        offset: const Offset(0, 1),
+                      const SizedBox(height: 12),
+                      Text(
+                        "Welcome to the ${selectedTraining == "faith" ? "Faith" : "Leadership"} Training Program! "
+                        "Here you'll gain spiritual insights and practical steps to strengthen your faith and leadership journey. "
+                        "Complete each module to unlock the next.",
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          color: Colors.grey[600],
+                          height: 1.4,
+                        ),
                       ),
                     ],
                   ),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 14,
-                      vertical: 8,
+                ),
+
+                // ====== Training Progress Bar ======
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Training Progress",
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.grey[800],
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: LinearProgressIndicator(
+                              value: progress,
+                              minHeight: 8,
+                              backgroundColor: Colors.grey.shade300,
+                              color: Colors.pink,
+                            ),
+                          ),
+                          Text(
+                            "${(progress * 100).toStringAsFixed(0)}%",
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
+                // ====== Modules Heading ======
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Text(
+                    "Modules",
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[800],
                     ),
-                    title: Text(
-                      "Module ${index + 1}",
+                  ),
+                ),
+
+                // ====== Module List ======
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: totalModules,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemBuilder: (context, index) {
+                      final isUnlocked = index < unlockedModules;
+
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: isUnlocked ? Colors.pink : Colors.grey,
+                            width: 1,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          color: Colors.white,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 3,
+                              offset: const Offset(0, 1),
+                            ),
+                          ],
+                        ),
+                        child: ListTile(
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
+                          ),
+                          title: Text(
+                            "Module ${index + 1}",
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: isUnlocked ? Colors.black : Colors.grey,
+                            ),
+                          ),
+                          subtitle: Text(
+                            isUnlocked
+                                ? "Tap to start this module"
+                                : "Locked until previous module is completed",
+                            style: GoogleFonts.poppins(
+                              fontSize: 13,
+                              color: isUnlocked ? Colors.black54 : Colors.grey,
+                            ),
+                          ),
+                          trailing: Icon(
+                            isUnlocked ? Icons.play_circle_fill : Icons.lock,
+                            color: isUnlocked ? Colors.pink : Colors.grey,
+                            size: 24,
+                          ),
+                          onTap: isUnlocked ? () => _openModule(index) : null,
+                        ),
+                      );
+                    },
+                  ),
+                ),
+
+                // ====== Continue Button ======
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: ElevatedButton(
+                    onPressed: unlockedModules < totalModules
+                        ? () => _openModule(unlockedModules)
+                        : _showLeadershipModal,
+                    style: shortButtonStyle1,
+                    child: Text(
+                      unlockedModules < totalModules
+                          ? "Continue"
+                          : "Complete Training",
                       style: GoogleFonts.poppins(
                         fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: isUnlocked ? Colors.black : Colors.grey,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    subtitle: Text(
-                      isUnlocked
-                          ? "Tap to start this module"
-                          : "Locked until previous module is completed",
-                      style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        color: isUnlocked ? Colors.black54 : Colors.grey,
-                      ),
-                    ),
-                    trailing: Icon(
-                      isUnlocked ? Icons.play_circle_fill : Icons.lock,
-                      color: isUnlocked ? Colors.pink : Colors.grey,
-                      size: 24,
-                    ),
-                    onTap: isUnlocked ? () => _openModule(index) : null,
                   ),
-                );
-              },
-            ),
-          ),
-
-          // ====== Continue Button ======
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: unlockedModules < totalModules
-                  ? () => _openModule(unlockedModules)
-                  : _showLeadershipModal,
-              style: shortButtonStyle1,
-              child: Text(
-                unlockedModules < totalModules
-                    ? "Continue"
-                    : "Complete Training",
-                style: GoogleFonts.poppins(
-                  fontSize: 16,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
                 ),
-              ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }

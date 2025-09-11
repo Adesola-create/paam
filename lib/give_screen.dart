@@ -13,12 +13,31 @@ class _GiveScreenState extends State<GiveScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Give')),
+      appBar: AppBar(),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Text(
+              "Give &\nSupport",
+              style: TextStyle(
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+                height: 1.2,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              "Support our mission and community through your generous giving. Choose to give once, regularly, or contribute to specific campaigns that make a difference.",
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.grey[600],
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 24),
             Text('Give once', style: TextStyle(fontSize: 18)),
             TextField(
               controller: amountController,

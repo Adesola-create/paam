@@ -4,12 +4,29 @@ class CommunityScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Community'),
-      ),
+      appBar: AppBar(),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
+          Text(
+            "Community\nConnection",
+            style: TextStyle(
+              fontSize: 32,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+              height: 1.2,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            "Connect with fellow believers, join prayer groups, and participate in community activities. Build meaningful relationships and grow together in faith.",
+            style: TextStyle(
+              fontSize: 16,
+              color: Colors.grey[600],
+              height: 1.4,
+            ),
+          ),
+          const SizedBox(height: 24),
           CommunityTile(title: 'Prayer Requests', members: 123),
           CommunityTile(title: 'Bible Study Group', members: 456),
           CommunityTile(title: 'Youth Ministry', members: 789),

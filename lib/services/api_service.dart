@@ -69,9 +69,18 @@ class ApiService {
 
     final data = jsonDecode(response.body);
 
-    // Save token if returned
-    if (response.statusCode == 200 && data['token'] != null) {
-      await saveToken(data['token']);
+    print("🔹 REGISTER URL: $url");
+    print("🔹 REGISTER HEADERS: ${_defaultHeaders()}");
+    print("🔹 REGISTER RESPONSE CODE: ${response.statusCode}");
+    print("🔹 REGISTER RESPONSE BODY: ${response.body}");
+
+    // Save token if returned (handle array structure in registration)
+    if (response.statusCode == 200) {
+      if (data['token'] != null) {
+        await saveToken(data['token']);
+      } else if (data['data'] != null && data['data'] is List && data['data'].isNotEmpty) {
+        await saveToken(data['data'][0]['apikey']);
+      }
     }
 
     return data;
@@ -95,8 +104,8 @@ class ApiService {
     print(
       "🔹 LOGIN BODY: ${jsonEncode({"email": email, "password": password})}",
     );
-print("🔹 LOGIN RESPONSE CODE: ${response.statusCode}");
-print("🔹 LOGIN RESPONSE BODY: ${response.body}");
+    print("🔹 LOGIN RESPONSE CODE: ${response.statusCode}");
+    print("🔹 LOGIN RESPONSE BODY: ${response.body}");
 
     // Save token if returned
     if (response.statusCode == 200 && data['token'] != null) {
